@@ -25,10 +25,13 @@ public class UserDetailsImpl implements UserDetails {
     private Integer user_id;
     private String username;
     private String email;
+   
 
     @JsonIgnore
     private String password;
+    private Integer company_id;
     private GrantedAuthority authority;
+    
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -52,6 +55,7 @@ public class UserDetailsImpl implements UserDetails {
             user.getUserName(),
             user.getEmail(),
             user.getPassword(),
+            user.getCompany().getId(),
             authority
         );
     }

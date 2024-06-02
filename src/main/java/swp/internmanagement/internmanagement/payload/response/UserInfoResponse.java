@@ -14,4 +14,5 @@ public class UserInfoResponse {
     private String username;
     private String email;
     private String role;
+    private int company_id;
 }

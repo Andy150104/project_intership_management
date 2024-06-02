@@ -1,44 +1,72 @@
 package swp.internmanagement.internmanagement.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import swp.internmanagement.internmanagement.entity.Field;
 import swp.internmanagement.internmanagement.entity.Job;
 import swp.internmanagement.internmanagement.entity.Request;
 // import swp.internmanagement.internmanagement.payload.request.HelpRequest;
 // import swp.internmanagement.internmanagement.service.JobService;
 // import swp.internmanagement.internmanagement.service.RequestService;
+import swp.internmanagement.internmanagement.payload.request.HelpRequest;
+import swp.internmanagement.internmanagement.payload.response.GetAllFieldsResponse;
+import swp.internmanagement.internmanagement.payload.response.GetAllJobsResponse;
+import swp.internmanagement.internmanagement.service.FieldService;
+import swp.internmanagement.internmanagement.service.JobService;
+import swp.internmanagement.internmanagement.service.RequestService;
+import swp.internmanagement.internmanagement.service.UserAccountService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/internBridge/home")
+@RequestMapping("/internbridge")
+@CrossOrigin(origins = "http://localhost:3000")
 public class HomeController {
 
-    // @Autowired
-    // private JobService jobService;
+     @Autowired
+    private JobService jobService;
 
-    // @Autowired
-    // private RequestService requestService;
+    @Autowired
+    private RequestService requestService;
 
-    // @GetMapping("/jobs")    
-    // public List<Job> findAll() {
-    //     return jobService.findAll();
-    // }
-    // @GetMapping(value = "/jobs/{jobName}")
-    // public List<Job> findJobByName(@PathVariable String jobName) {
-    //     return jobService.findByJobName(jobName);
-    // }
+    @Autowired
+    private UserAccountService userAccountService;
 
-    // @GetMapping(value = "/jobs/companyName/{companyName}")
-    // public List<Job> findJobByCompanyName(@PathVariable String companyName) {
-    //     return jobService.findJobByCompanyName(companyName);
-    // }
+    @Autowired
+    private FieldService fieldService;
 
-    // @PostMapping("/sendHelp")
-    // public ResponseEntity<Request> sendRequest(@Valid @RequestBody HelpRequest helpRequest){
-    //     return new ResponseEntity<>(requestService.sendRequest(helpRequest), HttpStatus.CREATED);
-    // }
+    @GetMapping("/jobs")
+    public ResponseEntity<GetAllJobsResponse> getAllJobs(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize
+    ) {
+        return ResponseEntity.ok(jobService.getAllJobs(pageNo, pageSize));
+    }
+
+    @GetMapping("/jobs/{jobName}")
+    public ResponseEntity<List<Job>> getJob(@PathVariable String jobName) {
+        return ResponseEntity.ok(jobService.getJobs(jobName));
+    }
+
+    @GetMapping("/fields")
+    public ResponseEntity<GetAllFieldsResponse> getAllFields(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize
+    ){
+        return ResponseEntity.ok(fieldService.getAllFields(pageNo, pageSize));
+    }
+
+    @GetMapping("/field")
+    public List<Field> getMethodName() {
+        return fieldService.getField();
+    }
+    
+
+    @PostMapping("/sendRequest")
+    public ResponseEntity<Request> sendRequest(@RequestBody HelpRequest helpRequest) {
+        return new ResponseEntity<>(requestService.saveRequest(helpRequest), HttpStatus.CREATED);
+    }
 }

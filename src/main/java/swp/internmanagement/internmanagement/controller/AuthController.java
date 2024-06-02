@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 import java.util.List;
 import jakarta.validation.Valid;
+import swp.internmanagement.internmanagement.entity.Company;
 import swp.internmanagement.internmanagement.models.User_account;
 import swp.internmanagement.internmanagement.payload.request.LoginRequest;
 import swp.internmanagement.internmanagement.payload.request.SignupRequest;
@@ -39,6 +42,7 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtils jwtUtils;
+
 
     public String generateUserName(String fullName, String role, int user_id) {
         String[] splitFullNames = fullName.split("\\s+");
@@ -66,7 +70,7 @@ public class AuthController {
             ResponseCookie jwtCookie=jwtUtils.generateJwtCookie(userDetails);
             String role= userDetails.getAuthorities().iterator().next().getAuthority();
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new UserInfoResponse(userDetails.getUser_id(),userDetails.getUsername(),userDetails.getEmail(),role));
+                    .body(new UserInfoResponse(userDetails.getUser_id(),userDetails.getUsername(),userDetails.getEmail(),role,userDetails.getCompany_id()));
         }catch (Exception e){
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -76,10 +80,20 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody List<SignupRequest> listSignUpRequest) {
         try {
+            LocalDate dateOfBirth = LocalDate.of(1990, 5, 15);
             for (SignupRequest signRequest : listSignUpRequest) {
                 int id=userRepository.findLastUserId()+1;
                 String userName=generateUserName(signRequest.getFullName(), signRequest.getRole(), id);
-                User_account user= new User_account(null, userName, encoder.encode("admin"), signRequest.getRole(), signRequest.getEmail(), null);
+                User_account user= new User_account();
+                Company company= new Company();
+                company.setId(signRequest.getCompany_id());
+                user.setUserName(userName);
+                user.setPassword(encoder.encode("admin"));
+                user.setFullName(signRequest.getFullName());
+                user.setRole(signRequest.getRole());
+                user.setEmail(signRequest.getEmail());
+                user.setDateOfBirth(dateOfBirth);
+                user.setCompany(company);
                 userRepository.save(user);
             }
 

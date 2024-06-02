@@ -61,8 +61,11 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth.requestMatchers("/internbridge/auth/**").permitAll()
+                    .requestMatchers("/internbridge/field").permitAll()
+                    .requestMatchers("/internbridge/**").permitAll()
+                    .requestMatchers("/internbridge/jobs").permitAll()
                     // .requestMatchers("/api/test/**").permitAll()
-                    .anyRequest().authenticated()
+                    // .anyRequest().authenticated()
             );
             http.authenticationProvider(authenticationProvider());
             http.addFilterBefore((Filter) authenticatioTokenFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -2,8 +2,6 @@ package swp.internmanagement.internmanagement.entity;
 
 import org.hibernate.annotations.Nationalized;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,44 +13,34 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import swp.internmanagement.internmanagement.models.User_account;
 
-@NoArgsConstructor
-@AllArgsConstructor(staticName = "build")
 @Getter
 @Setter
 @Entity
-@Table(name="request")
-public class Request {
-
+@Table(name = "mentor_feedback_intern")
+public class MentorFeedbackIntern {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_id", nullable = false)
+    @Column(name = "feedback_id", nullable = false)
     private Integer id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
-    private User_account user;
+    @JoinColumn(name = "mentor_id", referencedColumnName = "user_id",nullable = false)
+    private User_account mentor;
 
-    @Size(max = 50)
     @NotNull
-    @Nationalized
-    @Column(name = "request_type", nullable = false, length = 50)
-    private String requestType;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "intern_id", referencedColumnName = "user_id",nullable = false)
+    private User_account intern;
 
     @NotNull
     @Nationalized
     @Lob
-    @Column(name = "request_content", nullable = false)
-    private String requestContent;
+    @Column(name = "feedback_content", nullable = false)
+    private String feedbackContent;
 
-    @Column(name = "request_status", nullable = false)
-    private Boolean requestStatus = false;
 }
